@@ -24,30 +24,28 @@ const int puncherMotor = 16;
 const int liftAMotor = 6;
 const int liftBMotor = 7;
 
-
-
 // Right side motor creation
-pros::Motor midRight = pros::Motor(midRightMotor);
-pros::Motor backRight = pros::Motor(backRightMotor);
+pros::Motor midRight(midRightMotor);
+pros::Motor backRight(backRightMotor);
 
 // Right side motor group creation
-pros::Motor_Group rightSide = pros::Motor_Group({midRight, backRight});
+pros::Motor_Group rightSide({midRight, backRight});
 
 // Left side motor creation
-pros::Motor midLeft = pros::Motor(midLeftMotor);
-pros::Motor backLeft = pros::Motor(backLeftMotor);
+pros::Motor midLeft(midLeftMotor);
+pros::Motor backLeft(backLeftMotor);
 
 // Left side motor group creation
-pros::Motor_Group leftSide = pros::Motor_Group({midLeft, backLeft});
+pros::Motor_Group leftSide({midLeft, backLeft});
 
 // Sensor creation
-pros::IMU inertial = pros::IMU(inertial);
-pros::Rotation hWheel = pros::Rotation(hWheelSensor);
-pros::Rotation vWheel = pros::Rotation(vWheelSensor);
+pros::IMU inertial(inertial);
+pros::Rotation hWheel(hWheelSensor);
+pros::Rotation vWheel(vWheelSensor);
 
-pros::Motor inRight = pros::Motor(inRightMotor);
-pros::Motor inLeft = pros::Motor(inLeftMotor);
+pros::Motor inRight(inRightMotor);
+pros::Motor inLeft(inLeftMotor);
 
-pros::Motor puncher = pros::Motor(puncherMotor);
-pros::Motor liftA = pros::Motor(liftAMotor);
-pros::Motor liftB = pros::Motor(liftBMotor);
+pros::Motor puncher(puncherMotor);
+pros::Motor liftA(liftAMotor);
+pros::Motor liftB(liftBMotor);

@@ -1,18 +1,14 @@
 #include "main.h"
 #include "movement.h"
+#include <cmath>
+
+// Right side motor creation
 /**
- * A callback function for LLEMU's center button.
+ * A callback function for LLEMU's center button.s
  *
  * When this callback is fired, it will toggle line 2 of the LCD text between
  * "I was pressed!" and nothing.
  */
-
-
-
-
-
-
-
 void on_center_button() {
 	static bool pressed = false;
 	pressed = !pressed;
@@ -87,16 +83,67 @@ void opcontrol() {
 	pros::Motor left_mtr(1);
 	pros::Motor right_mtr(2);
 
+	// Right Side Motors
+	//frontRight 1
+	const int midRightMotor = 2;
+	const int backRightMotor = 3;
+
+	// Left Side Motors
+	//frontLeft 11
+	const int midLeftMotor = 12;
+	const int backLeftMotor = 13;
+
+	// Intake Motors
+	const int inRightMotor = 4;
+	const int inLeftMotor = 14;
+
+	// Sensors
+	const int vWheelSensor = 5;
+	const int hWheelSensor = 15;
+	const int inertialSensor = 17;
+
+	// Subsystems
+	const int puncherMotor = 16;
+	const int liftAMotor = 6;
+	const int liftBMotor = 7;
+
+	// Right side motor creation
+	pros::Motor midRight(midRightMotor);
+	pros::Motor backRight(backRightMotor);
+
+	// Right side motor group creation
+	pros::Motor_Group rightSide({midRight, backRight});
+
+	// Left side motor creation
+	pros::Motor midLeft(midLeftMotor);
+	pros::Motor backLeft(backLeftMotor);
+
+	// Left side motor group creation
+	pros::Motor_Group leftSide({midLeft, backLeft});
+
+	// Sensor creation
+	pros::IMU inertial(inertial);
+	pros::Rotation hWheel(hWheelSensor);
+	pros::Rotation vWheel(vWheelSensor);
+
+	pros::Motor inRight(inRightMotor);
+	pros::Motor inLeft(inLeftMotor);
+
+	pros::Motor puncher(puncherMotor);
+	pros::Motor liftA(liftAMotor);
+	pros::Motor liftB(liftBMotor);
+	
 	while (true) {
 		pros::lcd::print(0, "%d %d %d", (pros::lcd::read_buttons() & LCD_BTN_LEFT) >> 2,
 		                 (pros::lcd::read_buttons() & LCD_BTN_CENTER) >> 1,
 		                 (pros::lcd::read_buttons() & LCD_BTN_RIGHT) >> 0);
-		int left = master.get_analog(ANALOG_LEFT_Y);
-		int right = master.get_analog(ANALOG_RIGHT_Y);
+		int left = (pow(master.get_analog(ANALOG_LEFT_Y),3))/(pow(128,2));
+		int right = (pow(master.get_analog(ANALOG_LEFT_X),3))/(pow(128,2));
 
-		left_mtr = left;
-		right_mtr = right;
+		leftSide = left;
+		rightSide = right;
 
 		pros::delay(20);
+
 	}
 }
