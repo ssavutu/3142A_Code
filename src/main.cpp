@@ -122,7 +122,7 @@ void opcontrol() {
 	pros::Motor_Group leftSide({midLeft, backLeft});
 
 	// Sensor creation
-	pros::IMU inertial(inertial);
+	pros::IMU inertial(inertialSensor);
 	pros::Rotation hWheel(hWheelSensor);
 	pros::Rotation vWheel(vWheelSensor);
 

@@ -12,6 +12,7 @@ class Drivetrain{
         double wheelBase;
         double inRPM;
 
+        double theta;
 /*
         pros::Rotation hWheel;
         pros::Rotation vWheel;
