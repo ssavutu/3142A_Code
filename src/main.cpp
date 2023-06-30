@@ -143,6 +143,11 @@ void opcontrol() {
 		leftSide = left;
 		rightSide = right;
 
+		if(master.get_digital(DIGITAL_L1)){
+			inLeft.move(127);
+			inRight.move(127);
+		}
+
 		pros::delay(20);
 
 	}
