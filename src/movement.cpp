@@ -135,16 +135,17 @@ class Drivetrain{
 
         void boomerang(double xEnd, double yEnd, double thetaEnd, double dLead){
         
-        while (true)
-                h = sqrt(pow((gX-xEnd), 2) + pow((gY-yEnd), 2));
+                while (true){
+                        h = sqrt(pow((gX-xEnd), 2) + pow((gY-yEnd), 2));
 
-                x1 = xEnd - h*(sin(thetaEnd))*dLead;
+                        x1 = xEnd - h*(sin(thetaEnd))*dLead;
 
-                y1 = yEnd - h*(cos(thetaEnd))*dLead;
+                        y1 = yEnd - h*(cos(thetaEnd))*dLead;
 
-                // Carrot Point = x1, y1
+                        // Carrot Point = x1, y1
 
-                //Pid with the speed tied to the end point but turning to the carrot point
+                        //Pid with the speed tied to the end point but turning to the carrot point
+                }
         }
 
 };
