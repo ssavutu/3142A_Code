@@ -11,8 +11,18 @@ class Drivetrain{
         double trackWidth;
         double wheelBase;
         double inRPM;
+        
+        double distH;
+        double distV;
 
         double theta;
+
+        double gX;
+        double gY;
+
+        double h;
+        double x1;
+        double y1;
 /*
         pros::Rotation hWheel;
         pros::Rotation vWheel;
@@ -26,16 +36,14 @@ class Drivetrain{
         pros::Motor left_mtr();
         pros::Motor right_mtr();
 */
+
+        Drivetrain(double wS, double tW, double wB, double iR, double sR){};
+
         void position();
 
         void moveToPoint(double x, double y);
 
-        void moveToPose(double x, double y, double theta);
+        void boomerang(double xEnd, double yEnd, double dLead, double thetaEnd){};
 
-        Drivetrain(double wS, double tW, double wB, double iR, double sR){}
-
-        void angularPID(double setpoint);
-
-        void linearPID(double setpoint);
 };
 
