@@ -1,6 +1,270 @@
 #include "main.h"
-#include "movement.h"
-#include <cmath>
+using namespace pros;
+//#include "main.h"
+//#include "movement.h"
+using namespace pros;
+
+double wheelSize;
+double trackWidth;
+double wheelBase;
+double inRPM;
+
+double distH;
+double distV;
+
+double theta;
+
+double gX;
+double gY;
+
+double h;
+double x1;
+double y_1;
+/*int add(int a, int b){
+        return (a+b);
+}
+*/
+
+// Drivetrain constructor
+void drivetrainBuild(double wB, double tW, double wS, double iR, double tV, double tH){
+        lcd::print(3, "turn started");
+        
+        wheelSize = wS; // Size of tracking wheels
+        trackWidth = tW; // Distance between the robot’s right wheels’ center point and the robot’s left wheels’ center point
+        wheelBase = wB; // Distance between the drive shafts of the two drive wheels on the robot’s side
+        inRPM = iR; // Input RPM of the drivetrain motors
+        
+        distH = tH; // Distance of the horizontal tracking wheel to the tracking center
+        distV = tV; // Distance of the vertical tracking wheel to the tracking center
+}
+
+
+void position(){
+
+        double posV;
+        double posH;
+        double prevPosV;
+        double prevPosH;
+        double deltaV;
+        double deltaH;
+
+        theta = inertial.get_heading();
+
+        prevPosV = posV;
+        prevPosH = posH;
+
+        posV = vWheel.get_position();
+        posH = hWheel.get_position();
+
+        deltaV = (posV - prevPosV);
+        deltaH = (posH - prevPosH);
+
+        gY = (2*((deltaV/theta)+distV)*(sin(theta/2)) + gY);
+        gX = (2*((deltaH/theta)+distH)*(sin(theta/2)) + gX);
+
+}
+
+void moveToPoint(double x, double y){
+        lcd::print(3, "turn started");
+        //Turn PID
+        double distA = sqrt((pow((gX - x), 2))+(pow((y - y), 2)));
+        double distB = sqrt((pow((gX - gX), 2))+(pow((gY - y), 2)));
+        double distC = sqrt((pow((gX - x), 2))+(pow((gY - y), 2)));
+        
+        double thetaNew = asin(distA*((sin(90))/distC));
+        double oldTheta = theta;
+        double error;
+
+        while (theta < thetaNew){
+
+                error = thetaNew - theta;
+
+                double integral = integral + error;
+
+                if(error <= 0){
+
+                        integral = 0;
+
+                }
+
+                double prevError;
+
+                double derivative = error - prevError;
+
+                prevError = error;
+
+                double power = (error*1) + (integral*1) + (derivative*1);
+
+                if (thetaNew > oldTheta){
+                        rightSide = power;
+                        leftSide = power;
+                }
+
+                if (thetaNew > oldTheta){
+                        rightSide = power;
+                        leftSide = power;
+                }
+                else{
+                        rightSide = power;
+                        leftSide = power;
+                }
+
+                delay(10);
+        }
+
+        // Drive PID
+        double prevDist;
+        double dist;
+        
+        while (dist > 1){
+
+                prevDist = dist;
+
+                dist = sqrt((pow((gX - x), 2))+(pow((gY - y), 2)));
+
+                double integral = integral + dist;
+
+                if (dist = 0){
+                        integral = 0;
+                }
+
+                double derivative = dist - prevDist;
+
+                double  drivePower = (dist*1) + (integral*1) + (derivative*1);
+
+                rightSide = drivePower;
+                leftSide = -drivePower;
+                delay(10);
+        }
+}
+
+void turn(double heading){
+        lcd::print(3, "turn started");
+        double thetaNew = heading;
+        double oldTheta = inertial.get_heading();
+        double error;
+
+        while (theta < thetaNew){
+
+                error = thetaNew - theta;
+
+                double integral = integral + error;
+
+                if(error <= 0){
+
+                        integral = 0;
+
+                }
+
+                double prevError;
+
+                double derivative = error - prevError;
+
+                prevError = error;
+
+                double power = (error*.005) + (integral*.005) + (derivative*.005);
+
+                if (thetaNew > oldTheta){
+                        rightSide = power;
+                        leftSide = power;
+                }
+
+                if (thetaNew > oldTheta){
+                        rightSide = power;
+                        leftSide = power;
+                }
+                else{
+                        rightSide = power;
+                        leftSide = power;
+                }
+
+                delay(10);
+        }
+}
+
+void boomerang(double xEnd, double yEnd, double thetaEnd, double dLead){
+
+        while (true){
+                h = sqrt(pow((gX-xEnd), 2) + pow((gY-yEnd), 2));
+
+                x1 = xEnd - h*(sin(thetaEnd))*dLead;
+
+                y_1 = yEnd - h*(cos(thetaEnd))*dLead;
+
+                // Carrot Point = x1, y_1
+
+                //Turn PID
+                double distA = sqrt((pow((gX - x1), 2))+(pow((y_1 - y_1), 2)));
+                double distB = sqrt((pow((gX - gX), 2))+(pow((gY - y_1), 2)));
+                double distC = sqrt((pow((gX - x1), 2))+(pow((gY - y_1), 2)));
+                
+                double thetaNew = asin(distA*((sin(90))/distC));
+                double oldTheta = theta;
+                double error;
+
+                while (theta < thetaNew){
+
+                        error = thetaNew - theta;
+
+                        double integral = integral + error;
+
+                        if(error <= 0){
+
+                                integral = 0;
+
+                        }
+
+                        double prevError;
+
+                        double derivative = error - prevError;
+
+                        prevError = error;
+
+                        double power = (error*1) + (integral*1) + (derivative*1);
+
+                        if (thetaNew > oldTheta){
+                                rightSide = power;
+                                leftSide = -power;
+                        }
+
+                        if (thetaNew > oldTheta){
+                                rightSide = -power;
+                                leftSide = power;
+                        }
+                        else{
+                                rightSide = -power;
+                                leftSide = power;
+                        }
+
+                        delay(10);
+                }
+
+                // Drive PID
+                double prevDist;
+                double dist;
+                
+                while (dist > 1){
+
+                        prevDist = dist;
+
+                        dist = sqrt((pow((gX - xEnd), 2))+(pow((gY - yEnd), 2)));
+
+                        double integral = integral + dist;
+
+                        if (dist = 0){
+                                integral = 0;
+                        }
+
+                        double derivative = dist - prevDist;
+
+                        double  drivePower = (dist*1) + (integral*1) + (derivative*1);
+
+                        rightSide = drivePower;
+                        leftSide = drivePower;
+                        delay(10);
+                }
+        }
+}
 
 // Right side motor creation
 /**
@@ -9,12 +273,16 @@
  * When this callback is fired, it will toggle line 2 of the LCD text between
  * "I was pressed!" and nothing.
  */
-void on_center_button() {
+void on_center_button()
+{
 	static bool pressed = false;
 	pressed = !pressed;
-	if (pressed) {
+	if (pressed)
+	{
 		pros::lcd::set_text(2, "I was pressed!");
-	} else {
+	}
+	else
+	{
 		pros::lcd::clear_line(2);
 	}
 }
@@ -25,13 +293,16 @@ void on_center_button() {
  * All other competition modes are blocked by initialize; it is recommended
  * to keep execution time for this mode under a few seconds.
  */
-void initialize() {
-
-	// Display Initialization
-	pros::lcd::initialize();
-	pros::lcd::set_text(1, "Hello PROS User!");
-	pros::lcd::register_btn1_cb(on_center_button);
-
+void initialize()
+{
+	int time = pros::millis();
+  	int iter = 0;
+ 	while (inertial.is_calibrating()) {
+		pros::lcd::print(2, "IMU calibrating... %d\n", iter);
+		iter += 10;
+		pros::lcd::clear_line(2);
+		pros::delay(10);
+	}
 }
 
 /**
@@ -63,7 +334,14 @@ void competition_initialize() {}
  * will be stopped. Re-enabling the robot will restart the task, not re-start it
  * from where it left off.
  */
-void autonomous() {}
+void autonomous() {
+	// Display Initialization
+	pros::lcd::initialize();
+	pros::lcd::set_text(1, "Kill me");
+	pros::lcd::register_btn1_cb(on_center_button);
+	//Drivetrain chassis;
+	turn(90);
+}
 
 /**
  * Runs the operator control code. This function will be started in its own task
@@ -78,77 +356,53 @@ void autonomous() {}
  * operator control task will be stopped. Re-enabling the robot will restart the
  * task, not resume it from where it left off.
  */
-void opcontrol() {
-	pros::Controller master(pros::E_CONTROLLER_MASTER);
-	pros::Motor left_mtr(1);
-	pros::Motor right_mtr(2);
+void opcontrol()
+{
+	//pros::delay(500);
 
-	// Right Side Motors
-	//frontRight 1
-	const int midRightMotor = 2;
-	const int backRightMotor = 3;
-
-	// Left Side Motors
-	//frontLeft 11
-	const int midLeftMotor = 12;
-	const int backLeftMotor = 13;
-
-	// Intake Motors
-	const int inRightMotor = 4;
-	const int inLeftMotor = 14;
-
-	// Sensors
-	const int vWheelSensor = 5;
-	const int hWheelSensor = 15;
-	const int inertialSensor = 17;
-
-	// Subsystems
-	const int puncherMotor = 16;
-	const int liftAMotor = 6;
-	const int liftBMotor = 7;
-
-	// Right side motor creation
-	pros::Motor midRight(midRightMotor);
-	pros::Motor backRight(backRightMotor);
-
-	// Right side motor group creation
-	pros::Motor_Group rightSide({midRight, backRight});
-
-	// Left side motor creation
-	pros::Motor midLeft(midLeftMotor);
-	pros::Motor backLeft(backLeftMotor);
-
-	// Left side motor group creation
-	pros::Motor_Group leftSide({midLeft, backLeft});
-
-	// Sensor creation
-	pros::IMU inertial(inertialSensor);
-	pros::Rotation hWheel(hWheelSensor);
-	pros::Rotation vWheel(vWheelSensor);
-
-	pros::Motor inRight(inRightMotor);
-	pros::Motor inLeft(inLeftMotor);
-
-	pros::Motor puncher(puncherMotor);
-	pros::Motor liftA(liftAMotor);
-	pros::Motor liftB(liftBMotor);
 	
-	while (true) {
+
+	//chassis.drivetrainBuild(6,6,6,6,6);
+	//chassis.moveToPoint(90, 90);
+
+	while (true)
+	{
+		pros::lcd::clear_line(1);
+		pros::lcd::print(1, "%f", inertial.get_heading());
+		//pros::lcd::set_text(1, inertial.get_heading());
 		pros::lcd::print(0, "%d %d %d", (pros::lcd::read_buttons() & LCD_BTN_LEFT) >> 2,
-		                 (pros::lcd::read_buttons() & LCD_BTN_CENTER) >> 1,
-		                 (pros::lcd::read_buttons() & LCD_BTN_RIGHT) >> 0);
-		int left = (pow(master.get_analog(ANALOG_LEFT_Y),3))/(pow(128,2));
-		int right = (pow(master.get_analog(ANALOG_LEFT_X),3))/(pow(128,2));
+						 (pros::lcd::read_buttons() & LCD_BTN_CENTER) >> 1,
+						 (pros::lcd::read_buttons() & LCD_BTN_RIGHT) >> 0);
+
+		// Tank Drive + Drive Curve
+		/*int left = (pow(master.get_analog(ANALOG_LEFT_Y),3))/(pow(128,2));
+		int right = -(pow(master.get_analog(ANALOG_RIGHT_Y),3))/(pow(128,2));
+		*/
+
+		// Arcade Drive + Drive Curve
+		int left = -((pow(master.get_analog(ANALOG_LEFT_Y), 3)) / (pow(128, 2)) + (pow(master.get_analog(ANALOG_RIGHT_X), 3)) / (pow(128, 2)));
+		int right = ((pow(master.get_analog(ANALOG_LEFT_Y), 3)) / (pow(128, 2)) - (pow(master.get_analog(ANALOG_RIGHT_X), 3)) / (pow(128, 2)));
+
+	//	int left = -master.get_analog(ANALOG_LEFT_Y) + master.get_analog(ANALOG_RIGHT_X);
+	//	int right = master.get_analog(ANALOG_LEFT_Y) - master.get_analog(ANALOG_RIGHT_X);
 
 		leftSide = left;
 		rightSide = right;
 
-		if(master.get_digital(DIGITAL_L1)){
-			inLeft.move(127);
-			inRight.move(127);
+		// Intake with bang-bang controller
+		while (master.get_digital(DIGITAL_L1))
+		{
+			if (intake.get_actual_velocity() < 550)
+			{
+				intake.move_velocity(600);
+			}
+			if (intake.get_actual_velocity() >= 550)
+			{
+				intake.move_velocity(0);
+			}
 		}
 
+		// Delay to prevent brain from freezing
 		pros::delay(20);
-
 	}
 }
