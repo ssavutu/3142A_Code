@@ -144,7 +144,76 @@ class Drivetrain{
 
                         // Carrot Point = x1, y1
 
-                        //Pid with the speed tied to the end point but turning to the carrot point
+                        //Turn PID
+                        double distA = sqrt((pow((gX - x1), 2))+(pow((y1 - y1), 2)));
+                        double distB = sqrt((pow((gX - gX), 2))+(pow((gY - y1), 2)));
+                        double distC = sqrt((pow((gX - x1), 2))+(pow((gY - y1), 2)));
+                        
+                        double thetaNew = asin(distA*((sin(90))/distC));
+                        double oldTheta = theta;
+                        double error;
+
+                        while (theta < thetaNew){
+
+                                error = thetaNew - theta;
+
+                                double integral = integral + error;
+
+                                if(error <= 0){
+
+                                        integral = 0;
+
+                                }
+
+                                double prevError;
+
+                                double derivative = error - prevError;
+
+                                prevError = error;
+
+                                double power = (error*1) + (integral*1) + (derivative*1);
+
+                                if (thetaNew > oldTheta){
+                                        rightSide = power;
+                                        leftSide = -power;
+                                }
+
+                                if (thetaNew > oldTheta){
+                                        rightSide = -power;
+                                        leftSide = power;
+                                }
+                                else{
+                                        rightSide = -power;
+                                        leftSide = power;
+                                }
+
+                                pros::delay(10);
+                        }
+
+                        // Drive PID
+                        double prevDist;
+                        double dist;
+                        
+                        while (dist > 1){
+
+                                prevDist = dist;
+
+                                dist = sqrt((pow((gX - xEnd), 2))+(pow((gY - yEnd), 2)));
+
+                                double integral = integral + dist;
+
+                                if (dist = 0){
+                                        integral = 0;
+                                }
+
+                                double derivative = dist - prevDist;
+
+                                double  drivePower = (dist*1) + (integral*1) + (derivative*1);
+
+                                rightSide = drivePower;
+                                leftSide = drivePower;
+                                pros::delay(10);
+                        }
                 }
         }
 
