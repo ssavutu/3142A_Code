@@ -314,18 +314,12 @@ void on_center_button()
 {
 	static bool pressed = false;
 	pressed = !pressed;
-<<<<<<< HEAD
 	if (pressed)
 	{
 		pros::lcd::set_text(2, "I was pressed!");
 	}
 	else
 	{
-=======
-	if (pressed) {
-		//pros::lcd::set_text(2, "I was pressed!");
-	} else {
->>>>>>> 5935521d65390d6837bcc6019e6fbe40989fc66c
 		pros::lcd::clear_line(2);
 	}
 }
