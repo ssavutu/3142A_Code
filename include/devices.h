@@ -27,6 +27,9 @@ extern Rotation vWheel;
 extern Motor intake;
 // Motor inLeft(inLeftMotor);
 
-extern Motor puncher;
+extern Motor cata;
 extern Motor liftA;
 extern Motor liftB;
+
+extern ADIDigitalOut wingLeft;
+extern ADIDigitalOut wingRight;

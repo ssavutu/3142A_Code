@@ -26,6 +26,9 @@ Rotation vWheel(20);
 Motor intake(6);
 // Motor inLeft(inLeftMotor);
 
-Motor puncher(7);
+Motor cata(7, MOTOR_GEAR_100);
 Motor liftA(8);
 Motor liftB(9);
+
+ADIDigitalOut wingLeft('A');
+ADIDigitalOut wingRight('B');

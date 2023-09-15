@@ -64,22 +64,26 @@ void position(){
 
 }
 
+
 void moveToPoint(double x, double y){
-        lcd::print(3, "turn started");
+        //lcd::print(3, "turn started");
         //Turn PID
         double distA = sqrt((pow((gX - x), 2))+(pow((y - y), 2)));
         double distB = sqrt((pow((gX - gX), 2))+(pow((gY - y), 2)));
         double distC = sqrt((pow((gX - x), 2))+(pow((gY - y), 2)));
         
         double thetaNew = asin(distA*((sin(90))/distC));
-        double oldTheta = theta;
+        double oldTheta = inertial.get_heading();
         double error;
-
+        double integral;
+        double prevError;
+        double derivative;
+        double power;
         while (theta < thetaNew){
-
+                prevError = error;
                 error = thetaNew - theta;
 
-                double integral = integral + error;
+                integral = integral + error;
 
                 if(error <= 0){
 
@@ -87,13 +91,11 @@ void moveToPoint(double x, double y){
 
                 }
 
-                double prevError;
+                derivative = error - prevError;
 
-                double derivative = error - prevError;
+                
 
-                prevError = error;
-
-                double power = (error*1) + (integral*1) + (derivative*1);
+                power = (error*1) + (integral*1) + (derivative*1);
 
                 if (thetaNew > oldTheta){
                         rightSide = power;
@@ -115,40 +117,83 @@ void moveToPoint(double x, double y){
         // Drive PID
         double prevDist;
         double dist;
-        
+        double integralD;
+        double derivativeD;
+        double  drivePower;
         while (dist > 1){
 
                 prevDist = dist;
 
                 dist = sqrt((pow((gX - x), 2))+(pow((gY - y), 2)));
 
-                double integral = integral + dist;
+                integralD = integralD + dist;
 
                 if (dist = 0){
                         integral = 0;
                 }
 
-                double derivative = dist - prevDist;
+                derivativeD = dist - prevDist;
 
-                double  drivePower = (dist*1) + (integral*1) + (derivative*1);
+                drivePower = (dist*1) + (integralD*1) + (derivativeD*1);
 
                 rightSide = drivePower;
-                leftSide = -drivePower;
+                leftSide = drivePower;
                 delay(10);
         }
 }
 
+
+void driveFor(double inches, bool reverse){
+        double prevError;
+        double drivePower;
+        double error;
+        double integral;
+        double derivative;
+        double power;
+        while (error > 1){
+
+                prevError = error;
+
+                error = inches - error;
+
+                integral = integral + error;
+
+                if (error = 0){
+                        integral = 0;
+                }
+
+                derivative = error - prevError;
+
+                power = (error*1) + (integral*1) + (derivative*1);
+        if(reverse == true){
+                rightSide = -drivePower;
+                leftSide = -drivePower;
+        }
+        else{
+                rightSide = drivePower;
+                leftSide = drivePower;
+        }
+
+                delay(10);
+        }
+}
+
+
 void turn(double heading){
         lcd::print(3, "turn started");
-        double thetaNew = heading;
-        double oldTheta = inertial.get_heading();
         double error;
+        double integral;
+        theta = inertial.get_heading();
+        double initialHeading = inertial.get_heading();
+        double prevError;
+        double derivative;
+        double power;
+        while (theta < heading){
+                prevError = error;
+                theta = inertial.get_heading();
+                error = heading - theta;
 
-        while (theta < thetaNew){
-
-                error = thetaNew - theta;
-
-                double integral = integral + error;
+                integral = integral + error;
 
                 if(error <= 0){
 
@@ -156,24 +201,15 @@ void turn(double heading){
 
                 }
 
-                double prevError;
+                derivative = error - prevError;
 
-                double derivative = error - prevError;
+                power = (error*1) ;//+ (integral*.005) + (derivative*1);
+                if (initialHeading > heading){
 
-                prevError = error;
-
-                double power = (error*.005) + (integral*.005) + (derivative*.005);
-
-                if (thetaNew > oldTheta){
-                        rightSide = power;
-                        leftSide = power;
+                        rightSide = -power;
+                        leftSide = -power;
                 }
-
-                if (thetaNew > oldTheta){
-                        rightSide = power;
-                        leftSide = power;
-                }
-                else{
+                else if (initialHeading < heading){
                         rightSide = power;
                         leftSide = power;
                 }
@@ -181,6 +217,7 @@ void turn(double heading){
                 delay(10);
         }
 }
+
 
 void boomerang(double xEnd, double yEnd, double thetaEnd, double dLead){
 
@@ -334,28 +371,20 @@ void competition_initialize() {}
  * will be stopped. Re-enabling the robot will restart the task, not re-start it
  * from where it left off.
  */
+
 void autonomous() {
 	// Display Initialization
 	pros::lcd::initialize();
-	pros::lcd::set_text(1, "Kill me");
+	//pros::lcd::set_text(1, "Kill me");
 	pros::lcd::register_btn1_cb(on_center_button);
 	//Drivetrain chassis;
-	turn(90);
+	//Task head(headfn);
+	//head
+	//turn(90);
 }
 
-/**
- * Runs the operator control code. This function will be started in its own task
- * with the default priority and stack size whenever the robot is enabled via
- * the Field Management System or the VEX Competition Switch in the operator
- * control mode.
- *
- * If no competition control is connected, this function will run immediately
- * following initialize().
- *
- * If the robot is disabled or communications is lost, the
- * operator control task will be stopped. Re-enabling the robot will restart the
- * task, not resume it from where it left off.
- */
+
+ 
 void opcontrol()
 {
 	//pros::delay(500);
@@ -390,7 +419,7 @@ void opcontrol()
 		rightSide = right;
 
 		// Intake with bang-bang controller
-		while (master.get_digital(DIGITAL_L1))
+		if (master.get_digital(DIGITAL_L1))
 		{
 			if (intake.get_actual_velocity() < 550)
 			{
@@ -401,6 +430,19 @@ void opcontrol()
 				intake.move_velocity(0);
 			}
 		}
+
+                if (master.get_digital(DIGITAL_R1)){
+                        cata.move_velocity(100);
+                }
+
+                if (master.get_digital(DIGITAL_R2)){
+                        wingRight.set_value(true);
+                        wingLeft.set_value(true);
+                }
+                else{
+                        wingRight.set_value(false);
+                        wingLeft.set_value(false);
+                }
 
 		// Delay to prevent brain from freezing
 		pros::delay(20);
