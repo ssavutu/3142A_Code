@@ -3,17 +3,17 @@
 using namespace pros;
 Controller master (E_CONTROLLER_MASTER);
 // Right side motor creation
-Motor midRight(11, MOTOR_GEAR_600);
+Motor midRight(11, MOTOR_GEAR_600, false);
 // midRight.set_reversed(true);
-Motor backRight(12, MOTOR_GEAR_600);
+Motor backRight(12, MOTOR_GEAR_600, false);
 
 // Right side motor group creation
 Motor_Group rightSide({midRight, backRight});
 
 // Left side motor creation
-Motor midLeft(1, MOTOR_GEAR_600);
-// midLeft.set_reversed(true);
-Motor backLeft(2, MOTOR_GEAR_600);
+Motor midLeft(1, MOTOR_GEAR_600, false);
+//midLeft.set_reversed(true);
+Motor backLeft(2, MOTOR_GEAR_600, false);
 
 // Left side motor group creation
 Motor_Group leftSide({midLeft, backLeft});
